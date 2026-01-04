@@ -18,6 +18,9 @@ let vZ = 0;
 let rollSound;
 
 const friction = 0.965; // spin slows down over time
+const dragToRot = 0.01; // sensitivity for drag-based spin
+
+let draggingSound = false;
 
 function preload() {
   faceTex.front = loadImage("img/photo1.jpg");
@@ -87,6 +90,23 @@ function doubleClicked() {
   if (rollSound && rollSound.isLoaded()) rollSound.play();
   spinRandomly();
   return false;
+}
+
+function mouseDragged() {
+  // Spin cube based on drag motion
+  vY += movedX * dragToRot;
+  vX -= movedY * dragToRot;
+
+  // Play sound once when drag starts
+  if (!draggingSound && rollSound && rollSound.isLoaded()) {
+    rollSound.play();
+    draggingSound = true;
+  }
+  return false; // prevent page scroll on some devices
+}
+
+function mouseReleased() {
+  draggingSound = false;
 }
 
 // Double tap on mobile (p5 will often still call doubleClicked, but this helps)
