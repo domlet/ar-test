@@ -2,16 +2,56 @@
 <html>
 
 <head>
+  <!-- Load A-Frame (3D / WebXR framework) -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+  <!-- Load AR.js for marker-based AR -->
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 </head>
 
+<!-- Remove margins so AR fills the screen -->
+
 <body style="margin: 0; overflow: hidden;">
+
+  <!-- AR scene -->
   <a-scene embedded arjs>
+
+    <!-- Hiro marker: AR content appears when camera sees this marker -->
     <a-marker preset="hiro">
-      <a-box color="red"></a-box>
+
+      <!-- Group everything into one cube-sized entity -->
+      <a-entity scale="1 1 1">
+
+        <!-- FRONT face -->
+        <a-plane src="img/photo1.jpg" position="0 0 0.5" rotation="0 0 0" width="1" height="1">
+        </a-plane>
+
+        <!-- BACK face -->
+        <a-plane src="img/photo2.jpg" position="0 0 -0.5" rotation="0 180 0" width="1" height="1">
+        </a-plane>
+
+        <!-- RIGHT face -->
+        <a-plane src="img/photo3.jpg" position="0.5 0 0" rotation="0 -90 0" width="1" height="1">
+        </a-plane>
+
+        <!-- LEFT face -->
+        <a-plane src="img/photo4.jpg" position="-0.5 0 0" rotation="0 90 0" width="1" height="1">
+        </a-plane>
+
+        <!-- TOP face -->
+        <a-plane src="img/photo5.jpg" position="0 0.5 0" rotation="-90 0 0" width="1" height="1">
+        </a-plane>
+
+        <!-- BOTTOM face -->
+        <a-plane src="img/photo6.jpg" position="0 -0.5 0" rotation="90 0 0" width="1" height="1">
+        </a-plane>
+
+      </a-entity>
     </a-marker>
+
+    <!-- Camera entity required for AR -->
     <a-entity camera></a-entity>
+
   </a-scene>
 </body>
 
