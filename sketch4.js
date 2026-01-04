@@ -14,11 +14,18 @@ let vX = 0;
 let vY = 0;
 let vZ = 0;
 
+// zoom state
+let zoom = 1;
+let lastPinchDist = null;
+const zoomMin = 0.5;
+const zoomMax = 3;
+const pinchToZoom = 0.005;
+
 // sound
 let rollSound;
 
 const friction = 0.965; // spin slows down over time
-const dragToRot = 0.01; // sensitivity for drag-based spin
+const dragToRot = 0.0005; // sensitivity for drag-based spin
 
 let draggingSound = false;
 
@@ -71,6 +78,7 @@ function draw() {
 
   // Draw cube
   push();
+  scale(zoom);
   rotateX(rotX);
   rotateY(rotY);
   rotateZ(rotZ);
@@ -98,10 +106,10 @@ function mouseDragged() {
   vX -= movedY * dragToRot;
 
   // Play sound once when drag starts
-  if (!draggingSound && rollSound && rollSound.isLoaded()) {
-    rollSound.play();
-    draggingSound = true;
-  }
+  // if (!draggingSound && rollSound && rollSound.isLoaded()) {
+  //   rollSound.play();
+  //   draggingSound = true;
+  // }
   return false; // prevent page scroll on some devices
 }
 
@@ -109,10 +117,36 @@ function mouseReleased() {
   draggingSound = false;
 }
 
+function mouseWheel(event) {
+  zoom = constrain(zoom * (1 - event.delta * 0.001), zoomMin, zoomMax);
+  return false; // prevent page scroll on desktop
+}
+
 // Double tap on mobile (p5 will often still call doubleClicked, but this helps)
 function touchStarted() {
   // Prevent accidental scroll
   return false;
+}
+
+function touchMoved() {
+  if (touches.length >= 2) {
+    const d = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+    if (lastPinchDist !== null) {
+      zoom = constrain(zoom + (d - lastPinchDist) * pinchToZoom, zoomMin, zoomMax);
+    }
+    lastPinchDist = d;
+    return false;
+  }
+
+  // Single-touch drag keeps working via mouseDragged, but prevent scroll
+  lastPinchDist = null;
+  return false;
+}
+
+function touchEnded() {
+  if (touches.length < 2) {
+    lastPinchDist = null;
+  }
 }
 
 function spinRandomly() {
