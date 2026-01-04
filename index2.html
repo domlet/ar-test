@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+
+  <style>
+    /* UI overlay pinned to screen (not in 3D space) */
+    #ui {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      /* allow camera + AR; we re-enable on buttons */
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .btn {
+      pointer-events: auto;
+      /* clickable */
+      position: absolute;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      background: rgba(255, 255, 255, 0.85);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #left {
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    #right {
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    #up {
+      left: 50%;
+      top: 12px;
+      transform: translateX(-50%);
+    }
+
+    #down {
+      left: 50%;
+      bottom: 12px;
+      transform: translateX(-50%);
+    }
+
+    #hint {
+      left: 50%;
+      bottom: 70px;
+      transform: translateX(-50%);
+      padding: 8px 12px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body style="margin:0; overflow:hidden;">
+  <!-- UI overlay -->
+  <div id="ui">
+    <div id="up" class="btn">▲</div>
+    <div id="down" class="btn">▼</div>
+    <div id="left" class="btn">◀</div>
+    <div id="right" class="btn">▶</div>
+    <div id="hint" class="btn">Tap arrows, then rotate the marker to “see” the side.</div>
+  </div>
+
+  <a-scene embedded arjs>
+    <a-assets>
+      <!-- Put your images in /img -->
+      <img id="frontImg" src="img/image1.jpg">
+      <img id="leftImg" src="img/image2.jpg">
+      <img id="rightImg" src="img/image3.jpg">
+      <img id="topImg" src="img/image4.jpg">
+      <img id="bottomImg" src="img/image5.jpg">
+      <img id="backImg" src="img/image6.jpg"> <!-- optional -->
+    </a-assets>
+
+    <a-marker preset="hiro">
+      <!-- This is the cube we rotate when the user taps buttons -->
+      <a-entity id="cube" material="side: double">
+        <!-- Choose a cube size -->
+        <!-- face size S = 0.6, half = 0.3 -->
+        <!-- FRONT -->
+        <a-plane src="#frontImg" position="0 0 0.301" rotation="0 0 0" width="0.6" height="0.6"></a-plane>
+        <!-- BACK (optional) -->
+        <a-plane src="#backImg" position="0 0 -0.301" rotation="0 180 0" width="0.6" height="0.6"></a-plane>
+
+        <!-- LEFT -->
+        <a-plane src="#leftImg" position="-0.301 0 0" rotation="0 90 0" width="0.6" height="0.6"></a-plane>
+        <!-- RIGHT -->
+        <a-plane src="#rightImg" position="0.301 0 0" rotation="0 -90 0" width="0.6" height="0.6"></a-plane>
+
+        <!-- TOP -->
+        <a-plane src="#topImg" position="0 0.301 0" rotation="-90 0 0" width="0.6" height="0.6"></a-plane>
+        <!-- BOTTOM -->
+        <a-plane src="#bottomImg" position="0 -0.301 0" rotation="90 0 0" width="0.6" height="0.6"></a-plane>
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+    // Rotate the cube in 90° steps when UI buttons are tapped.
+    const cube = document.getElementById("cube");
+
+    // Track rotation state (degrees)
+    let rotX = 0;
+    let rotY = 0;
+
+    // Helper: apply rotation to A-Frame entity
+    function applyRotation() {
+      cube.setAttribute("rotation", `${rotX} ${rotY} 0`);
+    }
+
+    // Snap by 90 degrees
+    function turnLeft() { rotY += 90; applyRotation(); }
+    function turnRight() { rotY -= 90; applyRotation(); }
+    function turnUp() { rotX -= 90; applyRotation(); }
+    function turnDown() { rotX += 90; applyRotation(); }
+
+    // Hook up UI
+    document.getElementById("left").addEventListener("click", turnLeft);
+    document.getElementById("right").addEventListener("click", turnRight);
+    document.getElementById("up").addEventListener("click", turnUp);
+    document.getElementById("down").addEventListener("click", turnDown);
+
+    // Mobile sometimes needs touchstart to feel responsive
+    ["left", "right", "up", "down"].forEach(id => {
+      document.getElementById(id).addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        document.getElementById(id).click();
+      }, { passive: false });
+    });
+
+    applyRotation();
+  </script>
+</body>
+
+</html>

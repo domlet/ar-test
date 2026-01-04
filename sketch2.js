@@ -12,9 +12,9 @@ function setup() {
 
 function draw() {
   background(220);
-  // rotateY(angle);
-  // rotateX(angle * 0.6);
-  // angle += 0.005;
+  rotateY(angle);
+  rotateX(angle * 0.6);
+  angle += 0.005;
   noStroke();
   texture(hiroTex);
   let s = 150;
